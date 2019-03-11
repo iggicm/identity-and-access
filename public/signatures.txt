@@ -1,0 +1,1 @@
+[{"administator_id":"cb35c7e0-2d01-11e9-b338-b328d4b73607","signe_at":"2019-03-03 13:36:50","administrator_name":"Douki Ange"},{"administator_id":"e4eb3300-2bfe-11e9-bc28-5373631fd73d","signe_at":"2019-03-04 08:42:37","administrator_name":"Mbanga Dominique"}]

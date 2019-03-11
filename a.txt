@@ -1,0 +1,1 @@
+{"success":1,"faillure":0,"response":"Mot de passe Configure avec succes"}\n\n{"password":"123456"}
