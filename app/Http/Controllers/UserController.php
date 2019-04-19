@@ -11,7 +11,6 @@ use App\Domain\Model\Identity\PasswordResetInvitation;
 use App\Domain\Model\Identity\RevokedUser;
 use App\Domain\Model\Identity\UserDescriptor;
 use App\Domain\Model\Identity\UserDetails;
-use App\Domain\Model\Identity\UserInvitationToChoosePassword;
 use App\Domain\Model\Identity\UserRevokationProposition;
 use App\Http\Controllers\Oauth\ApiAuthProviderService;
 use App\Interestcenter;
@@ -56,6 +55,9 @@ class UserController extends Controller
                 env('PUSHER_APP_ID'),
                 $options);
         } catch (PusherException $e) {
+            $fp = fopen("error.txt", "w");
+            fprintf($fp, "%s", $e->getMessage());
+            fclose($fp);
         }
     }
 
@@ -368,10 +370,7 @@ class UserController extends Controller
     }
 
     public function interestcenters(Request $request){
-        //MyModel::distinct()->get(['column_name']);
-
         return response(array('success' => 1, 'faillure' => 0, 'response' => Interestcenter::all()), 200);
-
     }
 
     public function getApplications(Request $request){
@@ -441,7 +440,7 @@ class UserController extends Controller
             return response(array('success' => 0, 'faillure' => 1, 'raison' =>$request->get('email') . ' deja pris.'), 200);
 
         }
-        $administratorroles = Role::where('name', '=', 'ADMIN')->get();
+        $administratorroles = Role::where('name', '=', 'Administrator')->get();
         $roles = [];
         foreach ($administratorroles as $administratorrole){
             array_push($roles, $administratorrole);
@@ -475,7 +474,7 @@ class UserController extends Controller
                 'action' => 'required|string|max:250',
             ]
         );
-
+ 
 
         if ($validator->fails()) {
             return response(array('success' => 0, 'faillure' => 1, 'raison' => $validator->errors()->first()), 200);
@@ -601,7 +600,7 @@ class UserController extends Controller
                     'useTLS' => true
                 );*/
 
-                $pusher = null;
+                //$pusher = null;
                 try {
                     /*$pusher = new Pusher(env('PUSHER_APP_KEY'),//'db07cb8dbf0131afd0f6',
                         env('PUSHER_APP_SECRET'),
@@ -676,6 +675,10 @@ class UserController extends Controller
 
             //return $request;
         try {
+
+            /*$fp = fopen('android.txt', 'w');
+            fprintf($fp , '%s', json_encode($request->all()));
+            fclose($fp);*/
             $response = $this->apiAuthProviderService->createAccessToken($request);
 
             if (is_string($response)){
@@ -726,12 +729,26 @@ class UserController extends Controller
                'useTLS' => true
            );*/
 
-            $pusher = null;
+            //$pusher = null;
             try {
                 /*$pusher = new Pusher(env('PUSHER_APP_KEY'),//'db07cb8dbf0131afd0f6',
                     env('PUSHER_APP_SECRET'),
                     env('PUSHER_APP_ID'),
                     $options);*/
+
+
+
+                $user->isAdmin = $isAdmin;
+
+                $wasProposed = false;
+                if (!$user->isAdmin){
+                    $administratorProposition = AdministratorProposition::where('proposeduserid','=', $user->userid)->first();
+                    if (!($administratorProposition == null)){
+                        $wasProposed = true;
+                    }
+                }
+
+                $user->wasProposedAsAdmin = $wasProposed;
 
                 $user->temoins = Token::where('user_id', '=', $user->id)->orderBy('created_at', 'desc')->first();
 
@@ -905,37 +922,81 @@ class UserController extends Controller
         $user->isconnected = false;
         $user->save();
 
-        $pusher = null;
+        //$pusher = null;
         try {
+
+            $adminRoles = Role::where('name', '=', 'Administrator')->orWhere('name', 'Super Administrator')->get();
+            $isAdmin = false;
+
+            foreach ($adminRoles as $adminRole){
+                if ($adminRole->isUserInRole($user->userid)){
+                    $isAdmin = true;
+                    break;
+                }
+            }
+            
+            $user->isAdmin = $isAdmin;
+
+            $wasProposed = false;
+            if (!$user->isAdmin){
+                $administratorProposition = AdministratorProposition::where('proposeduserid','=', $user->userid)->first();
+                if (!($administratorProposition == null)){
+                    $wasProposed = true;
+                }
+            }
+
+            $user->wasProposedAsAdmin = $wasProposed;
+
+            $user->temoins = Token::where('user_id', '=', $user->id)->orderBy('created_at', 'desc')->first();
+
             $data['message'] = $user;//'hello world';
             $this->pusher->trigger('user-logedin', 'user-logedin', $data);
         } catch (PusherException $e) {
             return response(array('success' => 0, 'faillure' => 1, 'raison' => $e->getMessage()), 200);
         }
 
-        /*$options = array(
-              'cluster' => 'eu',
-              'useTLS' => true
-          );*/
-
-        $pusher = null;
+        /*$pusher = null;
         try {
-            /*$pusher = new Pusher(env('PUSHER_APP_KEY'),//'db07cb8dbf0131afd0f6',
-                env('PUSHER_APP_SECRET'),
-                env('PUSHER_APP_ID'),
-                $options);*/
 
-            $user->temoins = Token::where('user_id', '=', $user->id)->orderBy('created_at', 'desc')->first();
 
             $data['message'] = $user;//'hello world';
             $this->pusher->trigger('user-logedout', 'user-logedout', $data);
 
         } catch (PusherException $e) {
             return response(array('success' => 0, 'faillure' => 1, 'raison' => $e->getMessage()), 200);
-        }
+        }*/
 
         return response(array('success'=>1, 'faillure'=>0, 'response'=>'Utilisateur deconnecte avec succes. ' , 'user'=>$user, 'userid'=>$userid));
     }
+
+
+    /**
+     * @SWG\Get(
+     *   path="/users",
+     *   summary="List of users except the user making the request",
+     *   operationId="getUsers",
+     *   @SWG\Parameter(
+     *     name="customerId",
+     *     in="path",
+     *     description="Target customer.",
+     *     required=true,
+     *     type="integer"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="filter",
+     *     in="query",
+     *     description="Filter results based on query string value.",
+     *     required=false,
+     *     enum={"active", "expired", "scheduled"},
+     *     type="string"
+     *   ),
+     *   @SWG\Response(response=200, description="successful operation"),
+     *   @SWG\Response(response=406, description="not acceptable"),
+     *   @SWG\Response(response=500, description="internal server error")
+     * )
+     *
+     */
+
 
     public function getUsers(Request $request){
         $users = User::where('userid', '!=', $request->user()->userid)->get();
@@ -946,7 +1007,7 @@ class UserController extends Controller
             $temoins = Token::where('user_id', '=', $user->id)->orderBy('created_at', 'desc')->first();
             if (!($temoins == null)){
                 $temoins->revoked = (Carbon::parse($temoins->expires_at) < Carbon::now()) or $temoins->revoked;
-                $temoins->save();
+                //$temoins->save();
                 //return response(array('success' => 0, 'faillure' => 1, 'raison' => "Whoop une erreur s'est produite"), 200);
             }
 
@@ -962,6 +1023,16 @@ class UserController extends Controller
                     break;
                 }
             }
+            $wasProposed = false;
+            if (!$user->isAdmin){
+                $administratorProposition = AdministratorProposition::where('proposeduserid','=', $user->userid)->first();
+                if (!($administratorProposition == null)){
+                    $wasProposed = true;
+                }
+            }
+
+            $user->wasProposedAsAdmin = $wasProposed;
+
             array_push($utilisateurs, $user);
         }
 
@@ -976,7 +1047,7 @@ class UserController extends Controller
                 'Content-Type' => (new \finfo(FILEINFO_MIME))->buffer(null)
             ));
         }
-
+        //return $applicationid;
         $exists = Storage::disk('local')->exists($application->photo);
         if (!$exists){
             //return "file not exists";
@@ -1130,6 +1201,13 @@ class UserController extends Controller
         $user = User::where('userid', '=', $userid)->first();
         if ($user == null){
             return response(array('success'=>0, 'faillure'=>1, 'raison'=> 'Membre inconnu.'));
+        }
+
+        $userRevokation = UserRevokationProposition::where('proposeduserid', '=', $userid)->first();
+
+
+        if (!($userRevokation === null)){
+            return response(array('success'=>0, 'faillure'=>1, 'raison'=> 'Membre deja revoque.'));
         }
 
         $message = '';
@@ -1376,7 +1454,6 @@ class UserController extends Controller
                 array_push($retVal, $revocationsPropositions[$i]);
             }
         }
-
 
         return response(array('success' => 1, 'faillure' => 0, 'response' => $retVal), 200);
 

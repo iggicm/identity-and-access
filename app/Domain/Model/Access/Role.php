@@ -129,7 +129,4 @@ class Role extends Model
         }
         return $retVal;
     }
-
-
-
 }

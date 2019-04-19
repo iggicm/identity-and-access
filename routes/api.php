@@ -87,7 +87,6 @@ Route::get('/userrevokationpropositions-created', 'UserController@getRevocationP
 
 
 Route::get('users-cities', 'UserController@cities');
-Route::get('interestcenters', 'UserController@interestcenters');
 
 Route::get('testpusher', 'UserController@push');
 
@@ -109,5 +108,18 @@ Route::get('/groups', 'GroupController@retrieveAllGroup')->middleware(['auth:api
 Route::get('/groups/{groupid}/not-members', 'GroupController@notGroupMembers')->middleware(['auth:api','scope:'.env('SUPER_ADMINISTRATOR').','.env('ADMINISTRATOR')]);
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///
+///
+///
+///
+///         UTILS
+///
+///
+///
+///
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Route::get('interestcenters', 'UserController@interestcenters');
 
 

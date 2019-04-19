@@ -1,0 +1,1 @@
+{"client_id":"3","grant_type":"password","client_secret":"37sinRaxP1LxG0YiwFacNA1FJyqVc8yu6UTSeBuL","email":"softinovplus@gmail.com","password":"123456","latitude":"4.5","longitude":"9.4","username":"softinovplus@gmail.com"}

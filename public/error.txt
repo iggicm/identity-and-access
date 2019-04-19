@@ -1,0 +1,1 @@
+The Pusher library requires the PHP cURL module. Please ensure it is installed

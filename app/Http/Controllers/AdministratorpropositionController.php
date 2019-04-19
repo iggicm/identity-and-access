@@ -16,7 +16,6 @@ class AdministratorpropositionController extends Controller
     public function createAdministratorProposition(Request $request){
         $validator = Validator::make($request->all(), [
                 'proposeduserid' => 'required|string|max:150',
-                //'proposed_by' => 'required|string|max:150',
             ]
         );
 
@@ -88,13 +87,21 @@ class AdministratorpropositionController extends Controller
         }
 
         if ($trouver){
-            return response(array('success' => 0, 'faillure' => 1, 'raison' => 'Propose deja administrateur'), 200);
+            return response(array('success' => 0, 'faillure' => 1, 'raison' => 'Est deja administrateur'), 200);
         }
+
+        $administratorProposition = AdministratorProposition::where('proposeduserid', '=', $request->get('proposeduserid'))->first();
+
+        if (!($administratorProposition === null)){
+            return response(array('success' => 0, 'faillure' => 1, 'raison' => 'Deja propose  administrateur'), 200);
+        }
+
 
         //array_push($signatures, new AdministratorSignature($member->memberid, date('Y-m-d H:i:s'), $member->firstname.' ' . $member->lastname));
         $adminSignature = new AdministratorSignature($proposed_by->userid, date('Y-m-d H:i:s'), $proposed_by->firstname.' ' . $proposed_by->lastname);
+        $administratorproposition = null;
         try{
-            AdministratorProposition::create(
+            $administratorproposition = AdministratorProposition::create(
                 [
                     'administratorpropositionid'=>Uuid::generate()->string,
                     'proposeduserid'=>$request->get('proposeduserid'),
@@ -103,8 +110,40 @@ class AdministratorpropositionController extends Controller
                     'state'=>AdministratorProposition::CREATED
                 ]
             );
+
+
         }catch (\Exception $exception){
             return response(array('success' => 0, 'faillure' => 1, 'raison' => $exception->getMessage()), 200);
+
+        }
+
+
+        $signatures = json_decode($administratorproposition->administratorssignatures);
+
+        $isFinished = true;
+        foreach ($administrators as $item){
+            $found = false;
+            foreach ($signatures as $administratorssignature){
+                if ($administratorssignature->administator_id == $item){
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found){
+                $isFinished =  false;
+                break;
+            }
+        }
+
+        //$isFinished = $this->unanimityReached($request, $candidature);
+
+        if ($isFinished == true){
+            $usersplayingrole = json_decode($adminRole->usersplayingrole);
+            array_push($usersplayingrole, $administratorproposition->proposeduserid);
+            $adminRole->usersplayingrole = json_encode($usersplayingrole);
+            $adminRole->save();
+            $administratorproposition->state = AdministratorProposition::ACCEPTED;
+            $administratorproposition->save();
 
         }
 

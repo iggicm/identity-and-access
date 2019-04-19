@@ -25,8 +25,4 @@ class AdministratorSignature
         $this->signe_at = $signe_at;
         $this->administrator_name = $administrator_name;
     }
-
-
-
-
 }

@@ -10,7 +10,7 @@
     @include('beautymail::templates.sunny.contentStart')
 
     <p>
-        Le projet <strong>{{$project->name}}</strong> vient de recevoir une nouvelle demande au poste de <strong>{{$role->name}}</strong> ({{$role->description}})<br>
+         <strong>L'application IGGI </strong> vient de recevoir une nouvelle demande d'adhesion<br>
 
         <strong>Requerant: </strong> {{$application->firstname . '  ' . $application->lastname}}<br>
         <strong>E-Mail: </strong> {{$application->email}}<br>
