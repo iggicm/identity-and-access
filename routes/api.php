@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Http\Request;
+use Pusher\Pusher;
+use Pusher\PusherException;
 
 /*
 |--------------------------------------------------------------------------
@@ -121,5 +123,35 @@ Route::get('/groups/{groupid}/not-members', 'GroupController@notGroupMembers')->
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Route::get('interestcenters', 'UserController@interestcenters');
+
+Route::post('wstest', function (Request $request){
+
+    $options = array(
+        'cluster' => 'eu',
+        'useTLS' => false
+    );
+
+    $data['message'] = array('id'=>rand(), 'name'=>'Moi meme',
+        'message'=>$request->get('message'), 'date'=>new DateTime());
+    //$event =  new \App\Providers\UserTested($data);
+
+    try {
+        $pusher = new Pusher(env('PUSHER_APP_KEY'),//'db07cb8dbf0131afd0f6',
+            env('PUSHER_APP_SECRET'),
+            env('PUSHER_APP_ID'),
+            $options, "http://127.0.0.1", 3030, 1000000);
+        //'hello world';
+        $pusher->trigger('test', 'test', $data);
+
+    } catch (PusherException $e) {
+        $fp = fopen("error.txt", "w");
+        fprintf($fp, "%s", $e->getMessage());
+        fclose($fp);
+    }
+
+    /*broadcast(new \App\Events\TestEvent([$request->get('message')]));*/
+    return response(['success'=>1, 'faillure'=>0, 'response'=>'broadcast successfully'], 200);
+});
+
 
 

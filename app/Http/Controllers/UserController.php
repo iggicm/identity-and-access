@@ -45,19 +45,20 @@ class UserController extends Controller
         $this->apiAuthProviderService =  new ApiAuthProviderService();
 
         $options = array(
-            'cluster' => 'eu',
-            'useTLS' => true
+            'cluster' => env('PUSHER_APP_CLUSTER'),
+            'useTLS' => false,
+
         );
 
         try {
             $this->pusher = new Pusher(env('PUSHER_APP_KEY'),//'db07cb8dbf0131afd0f6',
                 env('PUSHER_APP_SECRET'),
                 env('PUSHER_APP_ID'),
-                $options);
+                $options, "http://127.0.0.1", env('PUSHER_APP_PORT'), env('PUSHER_APP_TIMEOUT'));
         } catch (PusherException $e) {
-            $fp = fopen("error.txt", "w");
+            /*$fp = fopen("error.txt", "w");
             fprintf($fp, "%s", $e->getMessage());
-            fclose($fp);
+            fclose($fp);*/
         }
     }
 
@@ -393,8 +394,8 @@ class UserController extends Controller
                 'email' => 'required|email|max:250',
                 'phone' => 'phone:'.$countries,
                 'commenttotheregistration'=>'required|string|max:5000',
-                'latitude' => 'required|numeric',
-                'longitude' => 'required|numeric',
+                //'latitude' => 'required|numeric',
+                //'longitude' => 'required|numeric',
 
             ]
         );
@@ -407,6 +408,10 @@ class UserController extends Controller
         $utilisateur = User::where('email', '=', $request->get('email'))->first();
         if (!($utilisateur === null)){
             return response(array('success' => 0, 'faillure' => 1, 'raison' =>'E-Mail "'.$request->get('email').'" deja pris'), 200);
+        }
+        $interestcenter = Interestcenter::where('interestcenterid', '=', $request->get('interestcenter'))->first();
+        if ($interestcenter == null){
+            return response(array('success' => 0, 'faillure' => 1, 'raison' =>'Centre d\'intere innistant'), 200);
         }
 
         $photo = $request->file('photo');
@@ -430,8 +435,8 @@ class UserController extends Controller
                 $request->get('phone'),
                 $request->get('commenttotheregistration'),
                 Application::DEFAULT_APPLICATION_STATE,
-                $request->get('latitude'),
-                $request->get('longitude')
+                $request->get('latitude')===null?0:$request->get('latitude'),
+                $request->get('longitude')===null?0:$request->get('longitude')
             );
 
             $application->save();
@@ -534,10 +539,10 @@ class UserController extends Controller
 
             try {
 
-                $ic = Interestcenter::where('name', '=', $application->interestcenter)->first();
+                /*$ic = Interestcenter::where('name', '=', $application->interestcenter)->first();
                 if ($ic === null){
                     Interestcenter::create(['interestcenterid'=>Uuid::generate()->string, 'name'=>$application->interestcenter, 'description'=>' ']);
-                }
+                }*/
 
                 $user->save();
                 $passwordResetInvitation->save();
@@ -600,12 +605,8 @@ class UserController extends Controller
                     'useTLS' => true
                 );*/
 
-                //$pusher = null;
                 try {
-                    /*$pusher = new Pusher(env('PUSHER_APP_KEY'),//'db07cb8dbf0131afd0f6',
-                        env('PUSHER_APP_SECRET'),
-                        env('PUSHER_APP_ID'),
-                        $options);*/
+
 
                     $data['message'] = $user;//'hello world';
                     $this->pusher->trigger('user-accepted', 'user-accepted', $data);
@@ -729,14 +730,7 @@ class UserController extends Controller
                'useTLS' => true
            );*/
 
-            //$pusher = null;
             try {
-                /*$pusher = new Pusher(env('PUSHER_APP_KEY'),//'db07cb8dbf0131afd0f6',
-                    env('PUSHER_APP_SECRET'),
-                    env('PUSHER_APP_ID'),
-                    $options);*/
-
-
 
                 $user->isAdmin = $isAdmin;
 
@@ -922,7 +916,6 @@ class UserController extends Controller
         $user->isconnected = false;
         $user->save();
 
-        //$pusher = null;
         try {
 
             $adminRoles = Role::where('name', '=', 'Administrator')->orWhere('name', 'Super Administrator')->get();
@@ -955,16 +948,6 @@ class UserController extends Controller
             return response(array('success' => 0, 'faillure' => 1, 'raison' => $e->getMessage()), 200);
         }
 
-        /*$pusher = null;
-        try {
-
-
-            $data['message'] = $user;//'hello world';
-            $this->pusher->trigger('user-logedout', 'user-logedout', $data);
-
-        } catch (PusherException $e) {
-            return response(array('success' => 0, 'faillure' => 1, 'raison' => $e->getMessage()), 200);
-        }*/
 
         return response(array('success'=>1, 'faillure'=>0, 'response'=>'Utilisateur deconnecte avec succes. ' , 'user'=>$user, 'userid'=>$userid));
     }
@@ -1089,8 +1072,6 @@ class UserController extends Controller
 
             $data['message'] = $data;//'hello world';
             $this->pusher->trigger('user-logedout', 'user-logedout', $data);
-            //$this->pusher->trigger('user-logedin', 'user-logedin', $data);
-
         } catch (PusherException $e) {
             //return response(array('success' => 0, 'faillure' => 1, 'raison' => $e->getMessage()), 200);
         }
