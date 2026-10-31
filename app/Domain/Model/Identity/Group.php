@@ -17,13 +17,16 @@ class Group extends Model
 
     public function __construct($groupid = null, $name =null, $description = null, $members = null, $created_by = null, $attributes = array())
     {
-        parent::__construct($attributes);
-        $this->groupid = $groupid;
-        $this->description = $description;
-        $this->name = $name;
-        $this->members = $members;
-        $this->created_by = $created_by;
-
+        if (is_array($groupid)) {
+            parent::__construct($groupid);
+        } else {
+            parent::__construct($attributes);
+            $this->groupid = $groupid;
+            $this->description = $description;
+            $this->name = $name;
+            $this->members = $members;
+            $this->created_by = $created_by;
+        }
     }
 
     public function addMembersToGroup($members){

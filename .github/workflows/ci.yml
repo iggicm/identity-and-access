@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+    branches:
+      - master
+      - main
+
+jobs:
+  docker-tests:
+    name: Build & Run Tests (Docker)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        run: docker build -t identity-and-access:ci .
+
+      - name: Execute Automated Test Suite
+        run: docker run --rm identity-and-access:ci vendor/bin/phpunit --verbose
+
+  php-tests:
+    name: Run Tests (PHP 7.3 Native)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP Environment
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.3'
+          extensions: mbstring, pdo, pdo_sqlite, gd, curl, json, fileinfo, xml, tokenizer
+          tools: composer:1.10.27
+
+      - name: Configure Git for Archived Dependencies
+        run: git config --global url."https://github.com/rrkhatri/Laravel-Intl.git".insteadOf "https://github.com/Propaganistas/Laravel-Intl.git"
+
+      - name: Install Composer Dependencies
+        run: composer install --prefer-dist --no-interaction
+
+      - name: Run PHPUnit Tests
+        run: vendor/bin/phpunit --verbose

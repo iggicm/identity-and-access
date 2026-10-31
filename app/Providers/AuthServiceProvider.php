@@ -31,10 +31,16 @@ class AuthServiceProvider extends ServiceProvider
 
         Passport::refreshTokensExpireIn(now()->addDays(2));
 
-        $scopes = Scope::all();
         $keyvals = array();
-        foreach ($scopes as $scope){
-            $keyvals[$scope->s_key] = $scope->description;
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('scopes')) {
+                $scopes = Scope::all();
+                foreach ($scopes as $scope){
+                    $keyvals[$scope->s_key] = $scope->description;
+                }
+            }
+        } catch (\Exception $e) {
+            // Database not ready or table not created yet
         }
         Passport::tokensCan($keyvals);
     }

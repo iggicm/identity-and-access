@@ -14,14 +14,17 @@ class PasswordResetInvitation extends Model
 
     public function __construct($invitationid = null, $firstname =null, $lastname =null, $email = null, $url = null, $attributes = array())
     {
-        parent::__construct($attributes);
-        $this->invitationid = $invitationid;
-        $this->firstname = $firstname;
-        $this->lastname = $lastname;
-        $this->email = $email;
-        $this->used = false;
-        $this->url = $url;
-
+        if (is_array($invitationid)) {
+            parent::__construct($invitationid);
+        } else {
+            parent::__construct($attributes);
+            $this->invitationid = $invitationid;
+            $this->firstname = $firstname;
+            $this->lastname = $lastname;
+            $this->email = $email;
+            $this->used = false;
+            $this->url = $url;
+        }
     }
 }
 

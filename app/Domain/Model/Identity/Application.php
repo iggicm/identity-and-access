@@ -26,22 +26,26 @@ class Application extends Model
                                 $country = null, $cityofresidency = null, $interestcenter = null, $email = null, $phone = null,
                                 $commenttotheregistration = null, $state = null, $latitude = null, $longitude = null, $attributes = array())
     {
-        parent::__construct($attributes);
+        if (is_array($applicationid)) {
+            parent::__construct($applicationid);
+        } else {
+            parent::__construct($attributes);
 
-        $this->applicationid = $applicationid;
-        $this->firstname = $firstname;
-        $this->lastname = $lastname;
-        $this->gender = $gender;
-        $this->photo = $photo;
-        $this->country = $country;
-        $this->cityofresidency = $cityofresidency;
-        $this->interestcenter = $interestcenter;
-        $this->email = $email;
-        $this->phone = $phone;
-        $this->commenttotheregistration = $commenttotheregistration;
-        $this->state = $state;
-        $this->latitude = $latitude;
-        $this->longitude = $longitude;
+            $this->applicationid = $applicationid;
+            $this->firstname = $firstname;
+            $this->lastname = $lastname;
+            $this->gender = $gender;
+            $this->photo = $photo;
+            $this->country = $country;
+            $this->cityofresidency = $cityofresidency;
+            $this->interestcenter = $interestcenter;
+            $this->email = $email;
+            $this->phone = $phone;
+            $this->commenttotheregistration = $commenttotheregistration;
+            $this->state = $state;
+            $this->latitude = $latitude;
+            $this->longitude = $longitude;
+        }
     }
 
 }

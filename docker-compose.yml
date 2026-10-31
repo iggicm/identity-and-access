@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: identity-and-access:latest
+    container_name: iggi_identity_and_access
+    environment:
+      - APP_ENV=testing
+      - DB_CONNECTION=sqlite
+      - "DB_DATABASE=:memory:"
+    volumes:
+      - .:/app
+      - /app/vendor
+    command: vendor/bin/phpunit

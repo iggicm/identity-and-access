@@ -51,7 +51,7 @@ class UserController extends Controller
         );
 
         try {
-            $this->pusher = new Pusher(env('PUSHER_APP_KEY'),//'db07cb8dbf0131afd0f6',
+            $this->pusher = new Pusher(env('PUSHER_APP_KEY'),
                 env('PUSHER_APP_SECRET'),
                 env('PUSHER_APP_ID'),
                 $options, "http://127.0.0.1", env('PUSHER_APP_PORT'), env('PUSHER_APP_TIMEOUT'));

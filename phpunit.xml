@@ -24,10 +24,34 @@
     </filter>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <env name="APP_KEY" value="base64:iWsnTsEy/MGoD9WtU7yEb/ncshrWNTVGgZoIiu16HWY="/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_DRIVER" value="array"/>
+        <env name="DB_CONNECTION" value="sqlite"/>
+        <env name="DB_DATABASE" value=":memory:"/>
         <env name="MAIL_DRIVER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
+        <env name="SUPER_ADMINISTRATOR" value="SUPER_ADMINISTRATOR"/>
+        <env name="ADMINISTRATOR" value="ADMINISTRATOR"/>
+        <env name="USER" value="USER"/>
+        <env name="ADD_GROUPS_TO_ROLE" value="ADD_GROUPS_TO_ROLE"/>
+        <env name="ADD_USERS_TO_ROLE" value="ADD_USERS_TO_ROLE"/>
+        <env name="REMOVE_GROUPS_TO_ROLE" value="REMOVE_GROUPS_TO_ROLE"/>
+        <env name="REMOVE_USERS_TO_ROLE" value="REMOVE_USERS_TO_ROLE"/>
+        <env name="ADD_MEMBERS_TO_GROUP" value="ADD_MEMBERS_TO_GROUP"/>
+        <env name="REMOVE_MEMBERS_TO_GROUP" value="REMOVE_MEMBERS_TO_GROUP"/>
+        <env name="GROUPS_ADDED_TO_ROLE" value="GROUPS_ADDED_TO_ROLE"/>
+        <env name="USERS_ADDED_TO_ROLE" value="USERS_ADDED_TO_ROLE"/>
+        <env name="HOST_WEB_CLIENT" value="http://localhost:4200/"/>
+        <env name="HOST_DEBATE" value="http://localhost:8001/"/>
+        <env name="DEBATE_CLIENT_ID" value="3"/>
+        <env name="DEBATE_CLIENT_SECRET" value="test-secret"/>
+        <env name="PUSHER_APP_ID" value="test-id"/>
+        <env name="PUSHER_APP_KEY" value="test-key"/>
+        <env name="PUSHER_APP_SECRET" value="test-secret"/>
+        <env name="PUSHER_APP_CLUSTER" value="eu"/>
+        <env name="PUSHER_APP_PORT" value="3030"/>
+        <env name="PUSHER_APP_TIMEOUT" value="1000"/>
     </php>
 </phpunit>

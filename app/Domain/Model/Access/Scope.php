@@ -18,11 +18,14 @@ class Scope extends Model
     protected $fillable = ['s_key', 'description'];
 
 
-    public function __construct($s_key = null, $description = null,  array $attributes = [])
+    public function __construct($s_key = null, $description = null, array $attributes = [])
     {
-        parent::__construct($attributes);
-
-        $this->s_key = $s_key;
-        $this->description = $description;
+        if (is_array($s_key)) {
+            parent::__construct($s_key);
+        } else {
+            parent::__construct($attributes);
+            $this->s_key = $s_key;
+            $this->description = $description;
+        }
     }
 }

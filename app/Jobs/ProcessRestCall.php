@@ -26,15 +26,6 @@ class ProcessRestCall implements ShouldQueue
         $this->params = $params;
         $this->url = $url;
         $this->request = $request;
-
-        $client = new Client();
-
-        $response = $client->post($this->host.'oauth/token', [
-            'form_params' => $this->params,
-        ]);
-
-        $this->token = json_decode((string) $response->getBody(), true)['access_token'];
-
     }
 
     /**
@@ -44,8 +35,13 @@ class ProcessRestCall implements ShouldQueue
      */
     public function handle()
     {
-
         $client = new Client();
+
+        $response = $client->post($this->host.'oauth/token', [
+            'form_params' => $this->params,
+        ]);
+
+        $this->token = json_decode((string) $response->getBody(), true)['access_token'];
 
         $response = $client->post($this->url, [
             'headers'=>[
@@ -53,11 +49,5 @@ class ProcessRestCall implements ShouldQueue
             ],
             'form_params' => $this->request,
         ]);
-
-
-        /*$fp = fopen('a.txt', 'w');
-        fprintf($fp, '%s', $response->getBody(). '\n\n' . json_encode($this->request));
-        fclose($fp);*/
-
     }
 }

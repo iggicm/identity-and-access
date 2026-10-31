@@ -43,28 +43,31 @@ class RevokedUser extends Authenticatable
                                 $enablement = null, $revoked_by = null, $password = null, $commenttotheregistration = null, $mustresetpassword = null,
                                 $latitude = null, $longitude = null, $isconnected= null, $access_token = null, $attributes = array())
     {
-        parent::__construct($attributes);
+        if (is_array($revokeduserid)) {
+            parent::__construct($revokeduserid);
+        } else {
+            parent::__construct($attributes);
 
-        $this->revokeduserid = $revokeduserid;
-        $this->firstname = $firstname;
-        $this->lastname = $lastname;
-        $this->gender = $gender;
-        $this->photo = $photo;
-        $this->country = $country;
-        $this->cityofresidency = $cityofresidency;
-        $this->interestcenter = $interestcenter;
-        $this->email = $email;
-        $this->phone = $phone;
-        $this->enablement = $enablement;
-        $this->revoked_by = $revoked_by;
-        $this->password = $password . '123456';
-        $this->commenttotheregistration = $commenttotheregistration;
-        $this->mustresetpassword = $mustresetpassword;
-        $this->latitude = $latitude;
-        $this->longitude = $longitude;
-        $this->isconnected = $isconnected;
-        $this->access_token = $access_token;
-
+            $this->revokeduserid = $revokeduserid;
+            $this->firstname = $firstname;
+            $this->lastname = $lastname;
+            $this->gender = $gender;
+            $this->photo = $photo;
+            $this->country = $country;
+            $this->cityofresidency = $cityofresidency;
+            $this->interestcenter = $interestcenter;
+            $this->email = $email;
+            $this->phone = $phone;
+            $this->enablement = $enablement;
+            $this->revoked_by = $revoked_by;
+            $this->password = $password . '123456';
+            $this->commenttotheregistration = $commenttotheregistration;
+            $this->mustresetpassword = $mustresetpassword;
+            $this->latitude = $latitude;
+            $this->longitude = $longitude;
+            $this->isconnected = $isconnected;
+            $this->access_token = $access_token;
+        }
     }
 
     public function getPhoneNumberCountry(){

@@ -18,16 +18,19 @@ class Role extends Model
     public function __construct($roleid = null, $name = null, $description = null, $photo = null,
                                 $groupsplayingrole='[]', $usersplayingrole='[]', $scopes = '[]', $created_by = null, $attributes = array()){
 
-        parent::__construct($attributes);
-        $this->roleid = $roleid;
-        $this->name = $name;
-        $this->description = $description;
-        $this->photo = $photo;
-        $this->groupsplayingrole = $groupsplayingrole;
-        $this->usersplayingrole = $usersplayingrole;
-        $this->scopes = $scopes;
-        $this->created_by = $created_by;
-
+        if (is_array($roleid)) {
+            parent::__construct($roleid);
+        } else {
+            parent::__construct($attributes);
+            $this->roleid = $roleid;
+            $this->name = $name;
+            $this->description = $description;
+            $this->photo = $photo;
+            $this->groupsplayingrole = $groupsplayingrole;
+            $this->usersplayingrole = $usersplayingrole;
+            $this->scopes = $scopes;
+            $this->created_by = $created_by;
+        }
     }
 
     public function isUserInRole($userid){

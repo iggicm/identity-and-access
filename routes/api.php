@@ -136,7 +136,7 @@ Route::post('wstest', function (Request $request){
     //$event =  new \App\Providers\UserTested($data);
 
     try {
-        $pusher = new Pusher(env('PUSHER_APP_KEY'),//'db07cb8dbf0131afd0f6',
+        $pusher = new Pusher(env('PUSHER_APP_KEY'),
             env('PUSHER_APP_SECRET'),
             env('PUSHER_APP_ID'),
             $options, "http://127.0.0.1", 3030, 1000000);

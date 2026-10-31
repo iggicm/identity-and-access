@@ -7,7 +7,7 @@ use App\User;
 use Illuminate\Database\Eloquent\Model;
 
 
-class Role extends Model
+class DebateRole extends Model
 {
     public const PROMOTER = "PROMOTER";
     public const RESPONSIBLE = "RESPONSIBLE";
